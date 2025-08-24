@@ -6,6 +6,7 @@ import jax
 import jax.numpy as jnp
 
 # ============= Constants =============
+
 d_model = 128
 seq_len = 16
 d_k = 32
@@ -38,16 +39,16 @@ def attn_head(params: dict, x: jnp.ndarray, causal_mask: jnp.ndarray) -> jnp.nda
 
     # Simple and clear: Q @ K.T
     attn_scores = jnp.matmul(Q, K.transpose(0, 2, 1))  # (batch, seq_len, seq_len)
-    
+
     # Scale
     attn_scores = attn_scores / jnp.sqrt(d_k)
-    
+
     # Mask
     attn_scores = jnp.where(causal_mask, attn_scores, -jnp.inf)
-    
+
     # Softmax
     attn_weights = jax.nn.softmax(attn_scores, axis=-1)
-    
+
     # Apply to values
     return jnp.matmul(attn_weights, V)  # (batch, seq_len, d_k)
 
